@@ -4,7 +4,8 @@ import {ui} from '@tryghost/pretty-cli';
 
 export default (zipPath, options) => {
     let content = {
-        posts: []
+        posts: [],
+        authors: [],
     };
 
     let skippedFileCount = 0;
@@ -19,11 +20,16 @@ export default (zipPath, options) => {
         // We need zipEntry.entryName instead, which contains it.
         entryName = zipEntry.entryName;
 
-        if (/^(?:\.\/)?(articles|drafts)\/.*\.(md|markdown|html)$/.test(entryName)) {
+        if (/^(?:\.\/)?content\/(articles|drafts)\/.*\.(md|markdown|html)$/.test(entryName)) {
             content.posts.push({
                 fileName: entryName,
                 fileContents: zipEntry.getData().toString('utf8')
             });
+        } else if (/^(?:\.\/)?content\/authors\/(.+?)\/_index\.md$/.test(entryName)) {
+            content.authors.push({
+                fileName: entryName,
+                fileContents: zipEntry.getData().toString('utf8')
+            })
 
         // Skip if not matched above, and report skipped files if `--verbose`
         } else {

@@ -201,7 +201,7 @@ const getTaskRunner = (options, logger) => {
                 // 9. Write a valid Ghost import zip
                 try {
                     let timer = Date.now();
-                    ctx.outputFile = await fsUtils.zip.write(process.cwd(), ctx.fileCache.zipDir, ctx.fileCache.defaultZipFileName);
+                    ctx.outputFile = await fsUtils.zip.write(process.cwd(), ctx.fileCache.zipDir, "felix-export.zip");
                     task.output = `Successfully written zip to ${ctx.outputFile.path} in ${prettyMilliseconds(Date.now() - timer)}`;
                 } catch (error) {
                     ctx.errors.push(error);

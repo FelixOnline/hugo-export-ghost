@@ -25,13 +25,26 @@ function _parseFrontMatterDate(fmDate) {
     return postDate;
 }
 
+function _backBlazePercentEncode(url) {
+    if (!url.includes('f001.backblazeb2.com')) {
+        return url;
+    }
+
+    const ignored = ['[', ']', "'", "©", "|", "¢", "ç", "ê", "é", "è", "É", "–"];
+    if (ignored.some(char => url.includes(char))) {
+        return null;
+    }
+
+    return url.replace(/ /g, '+').replace(/&/g, '%26').replace(/,/g, '%2C');
+}
+
 /*
 Process both the frontmatter metadata and content of a single Jekyll Markdown post.
 
 The body may be in Markdown or HTML.
 */
 
-const processMeta = (fileName, fileContents, options) => {
+const processMeta = (fileName, fileContents, authors, options) => {
     const inDraftsDir = fileName.startsWith('_drafts/');
 
     let frontmatter = fm(fileContents);
@@ -61,7 +74,7 @@ const processMeta = (fileName, fileContents, options) => {
     } else if (!inDraftsDir && frontmatterAttributes.date) {
         postDate = _parseFrontMatterDate(frontmatterAttributes.date);
         if (!postSlug) {
-            const slugRegex = new RegExp('([0-9a-zA-Z-_]+)/(.*).(md|markdown|html)');
+            const slugRegex = new RegExp('([0-9a-zA-Z-_/]+)/(.*).(md|markdown|html)');
             slugParts = fileName.match(slugRegex);
             postSlug = slugParts[2];
         }
@@ -114,38 +127,20 @@ const processMeta = (fileName, fileContents, options) => {
     }
 
     if (frontmatterAttributes.image) {
-        post.data.feature_image = frontmatterAttributes.image;
+        post.data.feature_image = _backBlazePercentEncode(frontmatterAttributes.image);
     }
 
-    if (frontmatterAttributes.author) {
-        post.data.author = {
-            url: string.slugify(frontmatterAttributes.author),
-            data: {
-                email: `${string.slugify(frontmatterAttributes.author)}@${(options.email) ? options.email : 'example.com'}`,
-                name: frontmatterAttributes.author,
-                slug: string.slugify(frontmatterAttributes.author),
-                roles: [
-                    'Contributor'
-                ]
-            }
-        };
-    }
-
+    post.data.authors = [];
     if (frontmatterAttributes.authors) {
-        post.data.authors = [];
-        frontmatterAttributes.authors.forEach((author) => {
-            post.data.authors.push({
-                url: string.slugify(author),
-                data: {
-                    email: `${string.slugify(author)}@${(options.email) ? options.email : 'example.com'}`,
-                    name: author,
-                    slug: string.slugify(author),
-                    roles: [
-                        'Contributor'
-                    ]
-                }
-            })
-        });
+        frontmatterAttributes.authors.forEach(id => {
+            if (id in authors) {
+                post.data.authors.push(authors[id]);
+            }
+        })
+    } else if (frontmatterAttributes.author) {
+        if (frontmatterAttributes.author in authors) {
+            post.data.authors.push(authors[frontmatterAttributes.author]);
+        }
     }
 
     // Add tags ^ categories from front matter
@@ -235,8 +230,8 @@ const processMeta = (fileName, fileContents, options) => {
     return post;
 };
 
-export default (fileName, fileContents, globalUser = false, options = {}) => {
-    const post = processMeta(fileName, fileContents, options);
+export default (fileName, fileContents, authors, globalUser = false, options = {}) => {
+    const post = processMeta(fileName, fileContents, authors, options);
 
     // The post body may be in Markdown or HTML.
     // If it's in Markdown, convert the Markdown to HTML
@@ -248,6 +243,7 @@ export default (fileName, fileContents, globalUser = false, options = {}) => {
     if (isHtml) {
         rawHtml = post._body;
     } else if (isMarkdown) {
+        post._body = post._body.replace(/{{<\s*figure\s*src="([^"]+)"\s*title="([^"]*)"\s*caption="([^"]*)"\s*attr="([^"]*)"\s*>}}/g, '<figure><img src="$1" alt="$2"><figcaption>$3</figcaption></figure>');
         rawHtml = md.render(post._body);
     } else {
         throw new errors.InternalServerError({
@@ -261,7 +257,7 @@ export default (fileName, fileContents, globalUser = false, options = {}) => {
     post.data.html = processHtml(rawHtml, options);
 
     // Process author
-    if (!post.data.author) {
+    if (!post.data.authors || post.data.authors.count <= 0) {
         post.data.author = globalUser;
     }
 
