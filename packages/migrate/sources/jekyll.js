@@ -66,13 +66,15 @@ const postProcessor = (scrapedData, data, options) => {
  * Wiring of the steps to migrate from Jekyll.
  *
  * @param {Object} options
+ * @param logger A ghost logger
  */
-const getTaskRunner = (options) => {
+const getTaskRunner = (options, logger) => {
     let runnerTasks = [
         {
             title: 'Initialising Workspace',
             task: (ctx, task) => {
                 ctx.options = options;
+                ctx.logger = logger;
                 ctx.allowScrape = {
                     all: ctx.options.scrape.includes('all'),
                     images: ctx.options.scrape.includes('img') || ctx.options.scrape.includes('all'),
@@ -152,7 +154,7 @@ const getTaskRunner = (options) => {
                 let tasks = ctx.assetScraper.fetch(ctx);
                 return makeTaskRunner(tasks, {
                     verbose: options.verbose,
-                    exitOnError: false,
+                    exitOnError: true,
                     concurrent: false
                 });
             }

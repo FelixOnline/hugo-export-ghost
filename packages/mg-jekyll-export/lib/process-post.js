@@ -14,7 +14,7 @@ function _parseFrontMatterDate(fmDate) {
     // The date was unquoted in the frontmatter, it gets parsed into a data object
     if (typeof fmDate === 'object') {
         postDate = fmDate;
-    // Otherwise the date gets parsed as a string
+        // Otherwise the date gets parsed as a string
     } else {
         const frontMaterDateRegex = new RegExp('([0-9]{4})[-:/\\ ]([0-9]{2})[-:/\\ ]([0-9]{2})');
 
@@ -36,6 +36,8 @@ const processMeta = (fileName, fileContents, options) => {
 
     let frontmatter = fm(fileContents);
     let frontmatterAttributes = frontmatter.attributes;
+
+    // title, subtitle, date, image, aliases (str[]), categories, tags, authors
 
     let postDate = false;
     let slugParts = false;
@@ -63,7 +65,7 @@ const processMeta = (fileName, fileContents, options) => {
             slugParts = fileName.match(slugRegex);
             postSlug = slugParts[2];
         }
-    // If it's a post with no `date` frontmatter
+        // If it's a post with no `date` frontmatter
     } else {
         const datedSlugRegex = new RegExp('([0-9a-zA-Z-_]+)/([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})-(.*).(md|markdown|html)');
         slugParts = fileName.match(datedSlugRegex);
@@ -107,6 +109,14 @@ const processMeta = (fileName, fileContents, options) => {
 
     post.data.title = frontmatterAttributes.title || '(Untitled)';
 
+    if (frontmatterAttributes.subtitle) {
+        post.data.custom_excerpt = frontmatterAttributes.subtitle;
+    }
+
+    if (frontmatterAttributes.image) {
+        post.data.feature_image = frontmatterAttributes.image;
+    }
+
     if (frontmatterAttributes.author) {
         post.data.author = {
             url: string.slugify(frontmatterAttributes.author),
@@ -121,6 +131,23 @@ const processMeta = (fileName, fileContents, options) => {
         };
     }
 
+    if (frontmatterAttributes.authors) {
+        post.data.authors = [];
+        frontmatterAttributes.authors.forEach((author) => {
+            post.data.authors.push({
+                url: string.slugify(author),
+                data: {
+                    email: `${string.slugify(author)}@${(options.email) ? options.email : 'example.com'}`,
+                    name: author,
+                    slug: string.slugify(author),
+                    roles: [
+                        'Contributor'
+                    ]
+                }
+            })
+        });
+    }
+
     // Add tags ^ categories from front matter
     // `tag` & `category` are interpreted as a single item
     // `tags` & `categories` are interpreted as a list of items
@@ -132,7 +159,7 @@ const processMeta = (fileName, fileContents, options) => {
             url: `migrator-added-tag-category-${string.slugify(frontmatterAttributes.category)}`,
             data: {
                 name: frontmatterAttributes.category,
-                slug: `category-${string.slugify(frontmatterAttributes.category)}`
+                slug: `${string.slugify(frontmatterAttributes.category)}`
             }
         });
     }
@@ -151,7 +178,7 @@ const processMeta = (fileName, fileContents, options) => {
                 url: `migrator-added-tag-category-${string.slugify(tag)}`,
                 data: {
                     name: tag,
-                    slug: `category-${string.slugify(tag)}`
+                    slug: `${string.slugify(tag)}`
                 }
             });
         });
@@ -176,12 +203,19 @@ const processMeta = (fileName, fileContents, options) => {
             normalizedTags = frontmatterAttributes.tags.split(' ');
         }
 
+        const ignoredTags = ['imported', 'image', 'imported_comments', 'multi-author'];
+        const tagMappings = {
+            'film': 'film-tv',
+            'arts': 'arts-2',
+        };
         normalizedTags.forEach((tag) => {
+            if (ignoredTags.includes(tag)) return;
+            let remappedTag = tagMappings[tag] || tag;
             post.data.tags.push({
-                url: `migrator-added-tag-${string.slugify(tag)}`,
+                url: `migrator-added-tag-${string.slugify(remappedTag)}`,
                 data: {
-                    name: tag,
-                    slug: string.slugify(tag)
+                    name: remappedTag,
+                    slug: string.slugify(remappedTag)
                 }
             });
         });

@@ -2,6 +2,14 @@ import {inspect} from 'node:util';
 import {ui} from '@tryghost/pretty-cli';
 import jekyll from '../sources/jekyll.js';
 import {convertOptionsToSywac, convertOptionsToDefaults} from '../lib/utilties/options-to-sywac.js';
+import {GhostLogger} from "@tryghost/logging";
+
+const logger = new GhostLogger( {
+    name: "migrateTools",
+    mode: "long",
+    level: "debug",
+    transports: ["stdout"],
+});
 
 // Internal ID in case we need one.
 const id = 'jekyll';
@@ -111,7 +119,7 @@ const run = async (argv) => {
 
     try {
         // Fetch the tasks, configured correctly according to the options passed in
-        let migrate = jekyll.getTaskRunner(argv);
+        let migrate = jekyll.getTaskRunner(argv, logger);
 
         // Run the migration
         await migrate.run(context);

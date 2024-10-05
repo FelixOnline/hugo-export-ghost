@@ -19,7 +19,7 @@ export default (zipPath, options) => {
         // We need zipEntry.entryName instead, which contains it.
         entryName = zipEntry.entryName;
 
-        if (/^_(posts|drafts)\/.*\.(md|markdown|html)$/.test(entryName)) {
+        if (/^(?:\.\/)?(articles|drafts)\/.*\.(md|markdown|html)$/.test(entryName)) {
             content.posts.push({
                 fileName: entryName,
                 fileContents: zipEntry.getData().toString('utf8')
