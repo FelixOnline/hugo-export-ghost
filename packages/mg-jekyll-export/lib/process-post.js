@@ -123,7 +123,11 @@ const processMeta = (fileName, fileContents, authors, options) => {
     post.data.title = frontmatterAttributes.title || '(Untitled)';
 
     if (frontmatterAttributes.subtitle) {
-        post.data.custom_excerpt = frontmatterAttributes.subtitle;
+        if (frontmatterAttributes.subtitle.length <= 300) {
+            post.data.custom_excerpt = frontmatterAttributes.subtitle;
+        } else if (!post._body.includes(frontmatterAttributes.subtitle)) {
+            post._body = `<b>${frontmatterAttributes.subtitle}</b>\n\n${post._body}`;
+        }
     }
 
     if (frontmatterAttributes.image) {
