@@ -16,7 +16,7 @@ function _parseFrontMatterDate(fmDate) {
         postDate = fmDate;
         // Otherwise the date gets parsed as a string
     } else {
-        const frontMaterDateRegex = new RegExp('([0-9]{4})[-:/\\ ]([0-9]{2})[-:/\\ ]([0-9]{2})');
+        const frontMaterDateRegex = new RegExp('([0-9]{4})[-:/ ]([0-9]{2})[-:/ ]([0-9]{2})');
 
         const dateParts = fmDate.match(frontMaterDateRegex);
         postDate = new Date(Date.UTC(dateParts[1], (dateParts[2] - 1), dateParts[3])); // Months are zero-index, so 11 equals December
@@ -30,7 +30,7 @@ function _backBlazePercentEncode(url) {
         return url;
     }
 
-    const ignored = ['[', ']', "'", "©", "|", "¢", "ç", "ê", "é", "è", "É", "–"];
+    const ignored = ['[', ']', '\'', '©', '|', '¢', 'ç', 'ê', 'é', 'è', 'É', '–'];
     if (ignored.some(char => url.includes(char))) {
         return null;
     }
@@ -136,11 +136,11 @@ const processMeta = (fileName, fileContents, authors, options) => {
 
     post.data.authors = [];
     if (frontmatterAttributes.authors) {
-        frontmatterAttributes.authors.forEach(id => {
+        frontmatterAttributes.authors.forEach((id) => {
             if (id in authors) {
                 post.data.authors.push(authors[id]);
             }
-        })
+        });
     } else if (frontmatterAttributes.author) {
         if (frontmatterAttributes.author in authors) {
             post.data.authors.push(authors[frontmatterAttributes.author]);
@@ -204,11 +204,13 @@ const processMeta = (fileName, fileContents, authors, options) => {
 
         const ignoredTags = ['imported', 'image', 'imported_comments', 'multi-author'];
         const tagMappings = {
-            'film': 'film-tv',
-            'arts': 'arts-2',
+            film: 'film-tv',
+            arts: 'arts-2'
         };
         normalizedTags.forEach((tag) => {
-            if (ignoredTags.includes(tag)) return;
+            if (ignoredTags.includes(tag)) {
+                return;
+            }
             let remappedTag = tagMappings[tag] || tag;
             post.data.tags.push({
                 url: `migrator-added-tag-${string.slugify(remappedTag)}`,

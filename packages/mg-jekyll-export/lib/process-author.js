@@ -10,14 +10,15 @@ export default (fileName, fileContents, options = {}) => {
         url: `${options.url}/authors/${frontmatterAttributes.id}/`,
         data: {
             name: frontmatterAttributes.name,
+            bio: frontmatterAttributes.position,
             slug: frontmatterAttributes.id,
             email: `${frontmatterAttributes.id}@${(options.email) ? options.email : 'example.com'}`,
             profile_image: frontmatterAttributes.image !== defaultImage ? frontmatterAttributes.image : null,
-            website: frontmatterAttributes["website_url"],
+            website: frontmatterAttributes.website_url,
             twitter: frontmatterAttributes.twitter,
             facebook: frontmatterAttributes.facebook,
             roles: ['Contributor']
         }
-    }
-}
+    };
+};
 

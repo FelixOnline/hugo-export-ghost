@@ -5,7 +5,7 @@ import {ui} from '@tryghost/pretty-cli';
 export default (zipPath, options) => {
     let content = {
         posts: [],
-        authors: [],
+        authors: []
     };
 
     let skippedFileCount = 0;
@@ -29,7 +29,7 @@ export default (zipPath, options) => {
             content.authors.push({
                 fileName: entryName,
                 fileContents: zipEntry.getData().toString('utf8')
-            })
+            });
 
         // Skip if not matched above, and report skipped files if `--verbose`
         } else {

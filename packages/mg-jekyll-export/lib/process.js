@@ -7,16 +7,16 @@ export default (input, options = {}) => {
     let globalUser = {
         url: `/authors/felix/`,
         data: {
-            name: "Felix",
-            slug: "felix",
-            bio: "The student newspaper of Imperial College London",
-            email: "felix@imperial.ac.uk",
-        },
+            name: 'Felix',
+            slug: 'felix',
+            bio: 'The student newspaper of Imperial College London',
+            email: 'felix@imperial.ac.uk'
+        }
     };
 
     let authorsDict = {};
     if (input.authors && input.authors.length > 0) {
-        input.authors.forEach(author => {
+        input.authors.forEach((author) => {
             let processedAuthor = processAuthor(author.fileName, author.fileContents, options);
             authorsDict[processedAuthor.data.slug] = processedAuthor;
         });
