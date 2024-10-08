@@ -204,8 +204,10 @@ const processMeta = (fileName, fileContents, authors, options) => {
 
         const ignoredTags = ['imported', 'image', 'imported_comments', 'multi-author'];
         const tagMappings = {
+            tv: 'film-tv',
             film: 'film-tv',
-            arts: 'arts-2'
+            sport: 'sport-societies',
+            'clubs-and-socs': 'sport-societies'
         };
         normalizedTags.forEach((tag) => {
             if (ignoredTags.includes(tag)) {
