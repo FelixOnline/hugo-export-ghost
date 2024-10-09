@@ -137,13 +137,15 @@ const processMeta = (fileName, fileContents, authors, options) => {
     post.data.authors = [];
     if (frontmatterAttributes.authors) {
         frontmatterAttributes.authors.forEach((id) => {
-            if (id in authors) {
-                post.data.authors.push(authors[id]);
+            const slug = string.slugify(id).replace(/_/g, '-');
+            if (slug in authors) {
+                post.data.authors.push(authors[slug]);
             }
         });
     } else if (frontmatterAttributes.author) {
-        if (frontmatterAttributes.author in authors) {
-            post.data.authors.push(authors[frontmatterAttributes.author]);
+        const slug = string.slugify(frontmatterAttributes.author).replace(/_/g, '-');
+        if (slug in authors) {
+            post.data.authors.push(authors[slug]);
         }
     }
 
