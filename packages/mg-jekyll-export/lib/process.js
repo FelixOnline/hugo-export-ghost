@@ -5,7 +5,7 @@ export default (input, options = {}) => {
     let output = {};
 
     let globalUser = {
-        url: `/authors/felix/`,
+        url: `/author/felix/`,
         data: {
             name: 'Felix',
             slug: 'felix',
