@@ -1,6 +1,6 @@
 import jekyllIngest from '@tryghost/mg-jekyll-export';
 import {toGhostJSON} from '@tryghost/mg-json';
-import mgHtmlMobiledoc from '@tryghost/mg-html-mobiledoc';
+import mgHtmlLexical from '@tryghost/mg-html-lexical';
 import MgWebScraper from '@tryghost/mg-webscraper';
 import MgAssetScraper from '@tryghost/mg-assetscraper';
 import MgLinkFixer from '@tryghost/mg-linkfixer';
@@ -169,11 +169,11 @@ const getTaskRunner = (options, logger) => {
         },
         {
             // @TODO don't duplicate this with the utils json file
-            title: 'Convert HTML -> MobileDoc',
+            title: 'Convert HTML -> Lexical',
             task: (ctx) => {
-                // 7. Convert post HTML -> MobileDoc
+                // 7. Convert post HTML -> Lexical
                 try {
-                    let tasks = mgHtmlMobiledoc.convert(ctx); // eslint-disable-line no-shadow
+                    let tasks = mgHtmlLexical.convert(ctx); // eslint-disable-line no-shadow
                     return makeTaskRunner(tasks, options);
                 } catch (error) {
                     ctx.errors.push(error);

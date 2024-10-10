@@ -105,7 +105,7 @@ const processMeta = (fileName, fileContents, authors, options) => {
         }
     };
 
-    const isDraft = (inDraftsDir || frontmatterAttributes.published === false);
+    const isDraft = (inDraftsDir || frontmatterAttributes.published === false || frontmatterAttributes.draft === true);
 
     // This will be processed more later and deleted
     post._body = frontmatter.body;
@@ -132,6 +132,10 @@ const processMeta = (fileName, fileContents, authors, options) => {
 
     if (frontmatterAttributes.image) {
         post.data.feature_image = _backBlazePercentEncode(frontmatterAttributes.image);
+    }
+
+    if (frontmatterAttributes.featured) {
+        post.data.featured = frontmatterAttributes.featured;
     }
 
     post.data.authors = [];
@@ -274,8 +278,8 @@ export default (fileName, fileContents, authors, globalUser = false, options = {
     // Add extra tags
     post.data.tags.push({
         url: 'migrator-added-tag', data: {
-            name: '#jekyll',
-            slug: 'hash-jekyll'
+            name: '#hugo',
+            slug: 'hash-hugo'
         }
     });
 

@@ -2,13 +2,13 @@ import {inspect} from 'node:util';
 import {ui} from '@tryghost/pretty-cli';
 import jekyll from '../sources/jekyll.js';
 import {convertOptionsToSywac, convertOptionsToDefaults} from '../lib/utilties/options-to-sywac.js';
-import {GhostLogger} from "@tryghost/logging";
+import {GhostLogger} from '@tryghost/logging';
 
-const logger = new GhostLogger( {
-    name: "migrateTools",
-    mode: "long",
-    level: "debug",
-    transports: ["stdout"],
+const logger = new GhostLogger({
+    name: 'migrateTools',
+    mode: 'long',
+    level: 'info',
+    transports: ['stdout']
 });
 
 // Internal ID in case we need one.

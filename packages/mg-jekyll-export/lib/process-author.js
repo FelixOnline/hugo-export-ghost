@@ -9,7 +9,7 @@ export default (fileName, fileContents, options = {}) => {
 
     const slug = string.slugify(frontmatterAttributes.id).replace(/_/g, '-');
     const author = {
-        url: `${options.url}/author/${slug}/`,
+        url: slug,
         data: {
             name: frontmatterAttributes.name,
             slug: slug,
@@ -27,7 +27,7 @@ export default (fileName, fileContents, options = {}) => {
     }
 
     if (frontmatterAttributes.twitter) {
-        author.data.twitter = `https://x.com/${frontmatterAttributes.twitter}`;
+        author.data.twitter = frontmatterAttributes.twitter;
     }
 
     if (frontmatterAttributes.facebook) {
